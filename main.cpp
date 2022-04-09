@@ -15,14 +15,28 @@ static void renderSceneCB()
     glClear(GL_COLOR_BUFFER_BIT);
     Scale += 0.001f;
 
-    glm::mat4 shiftTrans = {
-        {1.0f,0.0f,0.0f,sin(Scale)-0.4},
-        {0.0f,1.0f,0.0f,0.0f},
-        {0.0f,0.0f,1.0f,0.0f},
-        {0.0f,0.0f,0.0f,1.0f}
+    //glm::mat4 transition = {
+    //    {1.0f,0.0f,0.0f,0.0f},
+    //    {0.0f,1.0f,0.0f,sin(Scale) / 2},
+    //    {0.0f,0.0f,1.0f,0.0f},
+    //    {0.0f,0.0f,0.0f,1.0f}
+    //};
+
+    //glm::mat4 rotation = {
+    //    {cos(Scale),-sin(Scale),0.0f,0.0f},
+    //    {sin(Scale), cos(Scale),0.0f,0.0f},
+    //    {0.0f,      0.0f,       1.0f,0.0f},
+    //    {0.0f,      0.0f,       0.0f,1.0f}
+    //};
+
+    glm::mat4 scale = {
+        {sin(Scale),0.0f,0.0f,0.0f},
+        {0.0f,sin(Scale),0.0f,0.0f},
+        {0.0f,0.0f,sin(Scale),0.0f},
+        {0.0f,0.0f,0.0f,      1.1f}
     };
 
-    glUniformMatrix4fv(globalLocation, 1, GL_TRUE, &shiftTrans[0][0]);
+    glUniformMatrix4fv(globalLocation, 1, GL_TRUE, &scale[0][0]);
 
     glEnableVertexAttribArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
