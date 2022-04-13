@@ -8,6 +8,10 @@ GLuint globalLocation;
 
 const GLchar pVS[] = "#version 330\n layout (location = 0) in vec3 Position; uniform mat4 gWorld; void main() {gl_Position = gWorld * vec4(Position, 1.0);}";
 const GLchar pFS[] = "#version 330\n out vec4 FragColor; void main() {FragColor = vec4(0.8, 0.8, 0.8, 1.0);}";
+
+#define ToRadian(x) ((x) * M_PI / 180.0f)
+#define ToDegree(x) ((x) * 180.0f / M_PI)
+
 float Scale = 0.0f;
 
 static void renderSceneCB()
@@ -35,6 +39,8 @@ static void renderSceneCB()
         {0.0f,0.0f,sin(Scale),0.0f},
         {0.0f,0.0f,0.0f,      1.1f}
     };
+
+
 
     glUniformMatrix4fv(globalLocation, 1, GL_TRUE, &scale[0][0]);
 
