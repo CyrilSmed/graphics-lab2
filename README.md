@@ -1,29 +1,31 @@
 # Computer Graphics Laboratory work 2
-USATU Engineering Graphics univecity cource. <br>
-Drawing a triangle, square, dots and a line in OpenGL freeglut environment.<br>
+USATU Engineering Graphics univercity cource. <br>
+Creating and applying transformation matrices.<br>
 Выполнил студент группы ПРО-227 Кузнецов Кирилл.<br><br>
 
 # Pipeline Handler
 
 public:
-void setPosition(float x, float y, float z);<br>
-void setRotation(int degX, int degY, int degZ);<br>
-void setScale(float x, float y, float z);<br>
-Setters for m_position, m_rotation, m_scale private member variables<br><br>
+Setters for m_position, m_rotation, m_scale private member variables:<br>
 
-getTransformationMatrix - calculates and combines rotation, scale and translation transformation matrices (transformation has to be applied last to avoid change in center of rotation)
-glm::mat4* PipelineHandler::getTransformationMatrix()<br>
-{<br>
-glm::mat4 translationTransformation = getTranslationTransformation();<br>
-glm::mat4 rotationTransformation = getRotationTransformation();<br>
-glm::mat4 scaleTransformation = getScaleTransformation();<br><br>
+	void setPosition(float x, float y, float z);
+	void setRotation(int degX, int degY, int degZ);
+	void setScale(float x, float y, float z);
 
-m_transformation = rotationTransformation * scaleTransformation * translationTransformation;<br>
+getTransformationMatrix - calculates and combines rotation, scale and translation transformation matrices (transformation has to be applied last to avoid change in center of rotation):<br>
 
-return &m_transformation;<br>
-}<br><br>
+	glm::mat4* PipelineHandler::getTransformationMatrix()<br>
+	{
+		glm::mat4 translationTransformation = getTranslationTransformation();<br>
+		glm::mat4 rotationTransformation = getRotationTransformation();<br>
+		glm::mat4 scaleTransformation = getScaleTransformation();<br><br>
 
-private:
+		m_transformation = rotationTransformation * scaleTransformation * translationTransformation;<br>
+
+		return &m_transformation;<br>
+	}
+
+private:<br>
 glm::vec3 m_position;<br>
 glm::vec3 m_rotation;<br>
 glm::vec3 m_scale;<br>
@@ -82,3 +84,16 @@ Functions that actually create and return transformation matrices are based on l
 
 
 # Main Loop 
+
+scale += 0.001f; - every loop we increase global scale variable to create motion<br><br>
+By using sin and cos we create cyclical motion:<br>
+
+    PipelineHandler pipeline;
+    pipeline.setPosition(sin(scale)*0.2f, cos(scale) * 0.2f, 0.0f);
+    pipeline.setRotation(0,0, sin(scale) * 180);
+    pipeline.setScale(cos(scale) + 0.2f, cos(scale) + 0.2f, 0.0f);
+    
+    glUniformMatrix4fv(globalLocation, 1, GL_TRUE, (const GLfloat*)pipeline.getTransformationMatrix());
+    
+After which we get our final transormation matrix and pass it to glUniformMatrix4fv to update our points<br>
+
