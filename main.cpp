@@ -2,6 +2,7 @@
 #include <GL/freeglut.h>
 #include <iostream>
 #include <glm/glm.hpp>
+#include "PipelineHandler.h"
 
 GLuint VBO;
 GLuint globalLocation;
@@ -19,30 +20,12 @@ static void renderSceneCB()
     glClear(GL_COLOR_BUFFER_BIT);
     Scale += 0.001f;
 
-    //glm::mat4 transition = {
-    //    {1.0f,0.0f,0.0f,0.0f},
-    //    {0.0f,1.0f,0.0f,sin(Scale) / 2},
-    //    {0.0f,0.0f,1.0f,0.0f},
-    //    {0.0f,0.0f,0.0f,1.0f}
-    //};
+    PipelineHandler pipeline;
+    pipeline.setPosition(sin(Scale)*0.2f, cos(Scale) * 0.2f, 0.0f);
+    pipeline.setRotation(0,0, sin(Scale) * 180);
+    pipeline.setScale(cos(Scale) + 0.2f, cos(Scale) + 0.2f, 0.0f);
 
-    //glm::mat4 rotation = {
-    //    {cos(Scale),-sin(Scale),0.0f,0.0f},
-    //    {sin(Scale), cos(Scale),0.0f,0.0f},
-    //    {0.0f,      0.0f,       1.0f,0.0f},
-    //    {0.0f,      0.0f,       0.0f,1.0f}
-    //};
-
-    glm::mat4 scale = {
-        {sin(Scale),0.0f,0.0f,0.0f},
-        {0.0f,sin(Scale),0.0f,0.0f},
-        {0.0f,0.0f,sin(Scale),0.0f},
-        {0.0f,0.0f,0.0f,      1.1f}
-    };
-
-
-
-    glUniformMatrix4fv(globalLocation, 1, GL_TRUE, &scale[0][0]);
+    glUniformMatrix4fv(globalLocation, 1, GL_TRUE, (const GLfloat*)pipeline.getTransformationMatrix());
 
     glEnableVertexAttribArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
@@ -93,7 +76,7 @@ int main(int argc, char** argv)
 
     glutInitWindowSize(1024, 768);
     glutInitWindowPosition(100, 100);
-    glutCreateWindow("—делал ƒмитрий");
+    glutCreateWindow("Laboratory Work 2");
 
     GLenum res = glewInit();
     if (res != GLEW_OK) {

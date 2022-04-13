@@ -14,7 +14,7 @@ void PipelineHandler::setPosition(float x, float y, float z)
     m_position.y = y;
     m_position.z = z;
 }
-void PipelineHandler::setRotation(float x, float y, float z)
+void PipelineHandler::setRotation(int x, int y, int z)
 {
     m_rotation.x = x;
     m_rotation.y = y;
@@ -81,8 +81,9 @@ glm::mat4* PipelineHandler::getTransformationMatrix()
     glm::mat4 rotationTransformation = getRotationTransformation();
     glm::mat4 scaleTransformation = getScaleTransformation();
 
-    m_transformation = translationTransformation *
-        rotationTransformation * scaleTransformation;
+    m_transformation = rotationTransformation * 
+                       scaleTransformation * 
+                       translationTransformation;
 
     return &m_transformation;
 }

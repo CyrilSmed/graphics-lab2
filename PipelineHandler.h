@@ -7,7 +7,7 @@ public:
     PipelineHandler();
 
     void setPosition(float x, float y, float z);
-    void setRotation(float x, float y, float z);
+    void setRotation(int degX, int degY, int degZ);
     void setScale(float x, float y, float z);
 
     glm::mat4* getTransformationMatrix();
