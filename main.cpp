@@ -10,8 +10,8 @@ GLuint globalLocation;
 const GLchar pVS[] = "#version 330\n layout (location = 0) in vec3 Position; uniform mat4 gWorld; void main() {gl_Position = gWorld * vec4(Position, 1.0);}";
 const GLchar pFS[] = "#version 330\n out vec4 FragColor; void main() {FragColor = vec4(0.8, 0.8, 0.8, 1.0);}";
 
-#define ToRadian(x) ((x) * M_PI / 180.0f)
-#define ToDegree(x) ((x) * 180.0f / M_PI)
+const float WINDOW_WIDTH = 1000;
+const float WINDOW_HEIGHT = 800;
 
 float Scale = 0.0f;
 
@@ -21,9 +21,16 @@ static void renderSceneCB()
     Scale += 0.001f;
 
     PipelineHandler pipeline;
-    pipeline.setPosition(sin(Scale)*0.2f, cos(Scale) * 0.2f, 0.0f);
-    pipeline.setRotation(0,0, sin(Scale) * 180);
-    pipeline.setScale(cos(Scale) + 0.2f, cos(Scale) + 0.2f, 0.0f);
+
+    pipeline.setPosition(cos(Scale) * 0.25f, sin(Scale) * 0.065f, sin(Scale * 50) * 0.02f);
+    pipeline.setScale(sin(Scale)*0.2f + 1.0f, cos(Scale) * 0.2f + 1.0f, 1.0f);
+    pipeline.setRotation((int)(Scale * 100) % 360, 0, 0);
+    pipeline.setPerspective(
+        30.0f,
+        WINDOW_WIDTH,
+        WINDOW_HEIGHT,
+        10.0f,
+        100.0f);
 
     glUniformMatrix4fv(globalLocation, 1, GL_TRUE, (const GLfloat*)pipeline.getTransformationMatrix());
 
@@ -32,7 +39,7 @@ static void renderSceneCB()
     glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 0, 0);
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
-    glDrawArrays(GL_TRIANGLES, 0, 6);
+    glDrawArrays(GL_TRIANGLES, 0, 9);
 
     glDisableVertexAttribArray(0);
 
@@ -74,7 +81,7 @@ int main(int argc, char** argv)
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA);
 
-    glutInitWindowSize(1024, 768);
+    glutInitWindowSize(WINDOW_WIDTH, WINDOW_HEIGHT);
     glutInitWindowPosition(100, 100);
     glutCreateWindow("Laboratory Work 2");
 
@@ -89,14 +96,18 @@ int main(int argc, char** argv)
 
     glClearColor(0.05f, 0.15f, 0.2f, 0.0f);
 
-    glm::vec4 vecs[6] = {
-        {0.3f, 0.3f, 0.0f, 1.0f},
-        {0.5f, 0.5f, 0.0f, 1.0f},
-        {-0.1f, 0.5f, 0.0f, 1.0f},
+    glm::vec4 vecs[9] = {
+        {0.3f, 0.3f, 11.5f, 1.0f},
+        {0.5f, 0.5f, 12.0f, 1.0f},
+        {-0.1f, 0.5f, 12.5f, 1.0f},
 
-        {-0.3f, -0.3f, 0.0f, 1.0f},
-        {-0.5f, -0.5f, 0.0f, 1.0f},
-        {0.1f, -0.5f, 0.0f, 1.0f}
+        {0.0f, -0.25f, 11.0f, 1.0f},
+        {0.0f, 0.25f, 12.0f, 1.0f},
+        {0.0f, -0.25f, 13.0f, 1.0f},
+
+        {-0.3f, -0.3f, 12.5f, 1.0f},
+        {-0.5f, -0.5f, 12.0f, 1.0f},
+        {0.1f, -0.5f, 11.5f, 1.0f}
     };
 
     glGenBuffers(1, &VBO);
