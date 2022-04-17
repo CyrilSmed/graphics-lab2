@@ -22,15 +22,18 @@ static void renderSceneCB()
 
     PipelineHandler pipeline;
 
-    pipeline.setPosition(cos(Scale) * 0.25f, sin(Scale) * 0.065f, sin(Scale * 50) * 0.02f);
-    pipeline.setScale(sin(Scale)*0.2f + 1.0f, cos(Scale) * 0.2f + 1.0f, 1.0f);
-    pipeline.setRotation((int)(Scale * 100) % 360, 0, 0);
+    //pipeline.setPosition(cos(Scale) * 0.25f, sin(Scale) * 0.065f, sin(Scale * 50) * 0.02f);
+    //pipeline.setScale(sin(Scale)*0.2f + 1.0f, cos(Scale) * 0.2f + 1.0f, 1.0f);
+    //pipeline.setRotation((int)(Scale * 100) % 360, 0, 0);
     pipeline.setPerspective(
         30.0f,
         WINDOW_WIDTH,
         WINDOW_HEIGHT,
-        10.0f,
+        1.0f,
         100.0f);
+    pipeline.setCamera(glm::vec3({ 0.0f,0.0f,0.0f }),
+        glm::vec3({ 0.8f,0.8f ,2.0f }),
+        glm::vec3({ 0.0f,1.0f ,0.0f }));
 
     glUniformMatrix4fv(globalLocation, 1, GL_TRUE, (const GLfloat*)pipeline.getTransformationMatrix());
 

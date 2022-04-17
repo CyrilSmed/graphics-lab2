@@ -26,12 +26,9 @@ void PipelineHandler::setScale(float x, float y, float z)
     m_scale.y = y;
     m_scale.z = z;
 }
-void PipelineHandler::setPerspective(
-    float fov, 
-    float width, 
-    float height, 
-    float zNear, 
-    float zFar)
+void PipelineHandler::setPerspective(float fov, 
+    float width, float height, 
+    float zNear, float zFar)
 {
     m_projection.fov = fov;
     m_projection.width = width;
@@ -39,13 +36,22 @@ void PipelineHandler::setPerspective(
     m_projection.zNear = zNear;
     m_projection.zFar = zFar;
 }
+void PipelineHandler::setCamera(
+    const glm::vec3& pos,
+    const glm::vec3& target,
+    const glm::vec3& up)
+{
+    m_camera.posVec = pos;
+    m_camera.targetVec = target;
+    m_camera.upVec = up;
+}
 
-glm::mat4 PipelineHandler::getTranslationTransformation()
+glm::mat4 PipelineHandler::getTranslationTransformation(float x, float y, float z)
 {
     return glm::mat4({
-        {1.0f,0.0f,0.0f,m_position.x},
-        {0.0f,1.0f,0.0f,m_position.y},
-        {0.0f,0.0f,1.0f,m_position.z},
+        {1.0f,0.0f,0.0f,x},
+        {0.0f,1.0f,0.0f,y},
+        {0.0f,0.0f,1.0f,z},
         {0.0f,0.0f,0.0f,1.0f}
     });
 }
@@ -102,8 +108,7 @@ glm::mat4 PipelineHandler::getProjectionTransformation()
         {0.0f, 0.0f, 1.0f, 0.0f}
     });
 
-    float test = 1.0f / (tanHalfFOV * ar);
-    matrix[0][0] = test;
+    matrix[0][0] = 1.0f / (tanHalfFOV * ar);
 
     matrix[1][1] = 1.0f / tanHalfFOV;
     matrix[2][2] = (-zNear - zFar) / zRange;
@@ -111,31 +116,67 @@ glm::mat4 PipelineHandler::getProjectionTransformation()
 
     return matrix;
 }
+glm::mat4 PipelineHandler::getCameraRotationTransformation(
+    const glm::vec3& targetVec,
+    const glm::vec3& upVec)
+{
+    glm::vec3 N = targetVec;
+    N = glm::normalize(N);
+    glm::vec3 U = upVec;
+    U = glm::normalize(U);
+    //U = U.Cross(targetVec);
+    U = glm::cross(U, targetVec);
+    //glm::vec3 V = N.Cross(U);
+    glm::vec3 V = glm::cross(N, U);
+
+
+    glm::mat4 matrix = glm::mat4({
+        {U.x,  U.y,  U.z,  0.0f},
+        {V.x,  V.y,  V.z,  0.0f},
+        {N.x,  N.y,  N.z,  0.0f},
+        {0.0f, 0.0f, 0.0f, 1.0f}
+    });
+    return matrix;
+}
 
 glm::mat4* PipelineHandler::getTransformationMatrix()
 {
-    glm::mat4 translationTransformation = getTranslationTransformation();
-    glm::mat4 rotationTransformation = getRotationTransformation();
-    glm::mat4 scaleTransformation = getScaleTransformation();
+    glm::mat4 translationTransformation = getTranslationTransformation(
+        m_position.x,
+        m_position.y,
+        m_position.z);
+    glm::mat4 rotationTransformation =    getRotationTransformation();
+    glm::mat4 scaleTransformation =       getScaleTransformation();
+
     glm::mat4 projectionTransformation = getProjectionTransformation();
 
+    glm::mat4 cameraTranslation = getTranslationTransformation(
+        -m_camera.posVec.x,
+        -m_camera.posVec.y,
+        -m_camera.posVec.z);
+    glm::mat4 cameraRotation = getCameraRotationTransformation(
+        m_camera.targetVec,
+        m_camera.upVec);
+
     m_transformation = projectionTransformation *
-                       scaleTransformation * 
-                       rotationTransformation *
-                       translationTransformation;
+        cameraRotation *
+        scaleTransformation *
+        rotationTransformation *
+        translationTransformation *
+        cameraTranslation;
 
-    //float matrix[4][4] = { {0, 1, 2, 3},
-    //                       {4, 5, 6, 7},  
-    //                       {8, 9, 10, 11}, 
-    //                       {12, 13, 14, 15} };
+    float matrix[4][4] = { {0, 1, 2, 3},
+                           {4, 5, 6, 7},  
+                           {8, 9, 10, 11}, 
+                           {12, 13, 14, 15} };
 
-    //for (int x = 0; x < 4; x++)
-    //{
-    //    for (int y = 0; y < 4; y++)
-    //    {
-    //        matrix[x][y] = m_transformation[x][y];
-    //    }
-    //}
+    for (int x = 0; x < 4; x++)
+    {
+        for (int y = 0; y < 4; y++)
+        {
+            matrix[x][y] = cameraRotation[x][y];
+        }
+    }
 
     return &m_transformation;
 }
